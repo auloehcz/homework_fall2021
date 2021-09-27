@@ -100,8 +100,8 @@ class PGAgent(BaseAgent):
             ## TODO: values were trained with standardized q_values, so ensure
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
-            #values = utils.normalize(values_unnormalized, np.mean(values_unnormalized), np.std(values_unnormalized))
-            values = utils.unnormalize(values_unnormalized, np.mean(q_values), np.std(q_values))
+            values = utils.normalize(values_unnormalized, np.mean(values_unnormalized), np.std(values_unnormalized))
+            values = utils.unnormalize(values, np.mean(q_values), np.std(q_values))
 
             if self.gae_lambda is not None:
                 ## append a dummy T+1 value for simpler recursive calculation
@@ -130,9 +130,6 @@ class PGAgent(BaseAgent):
 
             else:
                 ## TODO: compute advantage estimates using q_values, and values as baselines
-                print("ASDFADSF")
-                print(q_values.shape)
-                print(values.shape)
                 advantages = q_values - values
 
         # Else, just set the advantage to [Q]
@@ -184,6 +181,8 @@ class PGAgent(BaseAgent):
         # TODO: create `list_of_discounted_returns`
         # HINT: it is possible to write a vectorized solution, but a solution
             # using a for loop is also fine
-        list_of_discounted_cumsums = np.cumsum([self.gamma**t * r for t, r in enumerate(rewards)][::-1])[::-1]
+        gammas = [self.gamma ** t for t in range(len(rewards))]
+        gamma_matrix = np.vstack([np.concatenate([np.zeros(i), gammas[:len(rewards)-i]]) for i in range(len(rewards))])
+        list_of_discounted_cumsums = gamma_matrix @ np.array(rewards)
 
         return list_of_discounted_cumsums
