@@ -147,7 +147,7 @@ class MLPPolicyPG(MLPPolicy):
             # 'zero_grad' first
 
         pred = self(observations).log_prob(actions)
-        loss = torch.neg(torch.sum(pred * advantages))
+        loss = torch.neg(torch.mean(pred * advantages))
 
         self.optimizer.zero_grad()
         loss.backward()
