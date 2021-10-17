@@ -118,7 +118,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             batch_scale_tril = scale_tril.repeat(batch_dim, 1, 1)
             action_distribution = distributions.MultivariateNormal(
                 batch_mean,
-                scale_tril=batch_scale_tril
+                scale_tril=batch_scale_tril,
             )
             return action_distribution
 
